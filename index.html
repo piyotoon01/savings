@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light">
+<title>넣을 돈에 맞는 파킹통장 · 예금 고르기 · 삐요</title>
+<meta name="description" content="언제 쓸 돈인지 고르고 금액만 넣으면 맞는 파킹통장과 정기예금만 금리 높은 순으로 보여주는 표. 2026년 11월 18일 공시 기준.">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<style>
+  @font-face{font-family:'GmarketSans'; font-weight:500; font-display:swap; src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansMedium.woff') format('woff')}
+  @font-face{font-family:'GmarketSans'; font-weight:700; font-display:swap; src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansBold.woff') format('woff')}
+  :root{
+    --ink:#1A1A1A; --sub:#3B3934; --line:#1A1A1A; --hair:#E6E3DC;
+    --blue:#2E4BFF; --blue-soft:#EDF0FF; --red:#E02020;
+    --yel:#FFF6C2; --bg:#FFFFFF; --soft:#FAF9F6; --green:#D9F2E4;
+  }
+  *{box-sizing:border-box; margin:0; padding:0}
+  body{font-family:'GmarketSans',-apple-system,'Apple SD Gothic Neo','Malgun Gothic',sans-serif; font-weight:500;
+    background:var(--bg); color:var(--ink); line-height:1.7; font-size:16px; word-break:keep-all; overflow-wrap:break-word;
+    letter-spacing:-.02em}
+  b,strong{font-weight:700}
+  .wrap{max-width:600px; margin:0 auto; padding:0 18px 80px}
+  .blue{color:var(--blue)}
+
+  header{padding:34px 0 6px}
+  .date{font-size:14px; color:var(--sub)}
+  h1{font-weight:700; font-size:clamp(34px,9.5vw,48px); line-height:1.12; letter-spacing:-.05em; margin:10px 0 14px}
+  h1 .blue{display:block}
+  .lead{font-size:17px; color:var(--sub)}
+  .lead b{color:var(--ink)}
+
+  .ask{margin-top:24px; font-weight:700; font-size:20px; letter-spacing:-.04em}
+  .ask .n{display:inline-grid; place-items:center; width:26px; height:26px; border-radius:50%; background:var(--ink); color:#fff; font-size:14px; margin-right:6px; vertical-align:2px}
+  .kinds{display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:12px}
+  @media (max-width:520px){
+    .kinds{grid-template-columns:1fr}
+    .kind{display:flex; align-items:baseline; justify-content:space-between; gap:10px; padding:11px 16px 8px; border-radius:16px}
+    .kind b{display:inline}
+  }
+  .kind{font:inherit; text-align:left; color:var(--ink); background:#fff; border:2.5px solid var(--line); border-radius:18px; padding:12px 14px 10px; cursor:pointer}
+  .kind b{display:block; font-size:18px; letter-spacing:-.04em}
+  .kind span{font-size:13.5px; color:var(--sub)}
+  .kind[aria-pressed="true"]{background:var(--ink); color:#fff}
+  .kind[aria-pressed="true"] span{color:#D9D6CE}
+  .amts{display:flex; flex-wrap:wrap; gap:8px; margin-top:12px}
+  .amt{font:inherit; font-weight:700; font-size:16px; color:var(--ink); background:#fff; border:2.5px solid var(--line); border-radius:999px;
+    padding:9px 16px 6px; cursor:pointer; letter-spacing:-.03em}
+  .amt[aria-pressed="true"]{background:var(--ink); color:#fff}
+  .kind:focus-visible,.amt:focus-visible,.custom input:focus-visible{outline:3px solid var(--blue); outline-offset:2px}
+  .custom{display:flex; align-items:center; gap:10px; margin-top:12px; font-weight:700; font-size:22px; letter-spacing:-.04em}
+  .custom input{font:inherit; font-size:28px; color:var(--ink); width:200px; max-width:60vw; padding:10px 16px 6px; border:2.5px solid var(--line); border-radius:16px; background:#fff; text-align:right; font-feature-settings:"tnum"}
+  .custom input::placeholder{color:#B5B1A8; font-weight:500}
+  .hint{font-size:14px; color:var(--sub); margin-top:8px}
+
+  .head{margin-top:28px; padding-top:20px; border-top:2px solid var(--line); display:flex; align-items:baseline; justify-content:space-between; gap:10px; flex-wrap:wrap}
+  .head h2{font-size:22px; font-weight:700; letter-spacing:-.04em}
+  .head span{font-size:14px; color:var(--sub)}
+  .note{font-size:15px; color:var(--sub); margin-top:6px}
+  .grp{margin-top:18px; font-weight:700; font-size:17px; letter-spacing:-.03em}
+  .grp span{font-weight:500; font-size:14px; color:var(--sub); margin-left:6px}
+
+  .list{margin-top:10px; display:grid; gap:10px}
+  .card{border:2px solid var(--line); border-radius:20px; padding:14px 16px 12px; display:grid; grid-template-columns:1fr auto; gap:4px 12px; align-items:start}
+  .card.top{background:var(--yel)}
+  .card .nm{min-width:0}
+  .card .bk{font-size:13.5px; color:var(--sub)}
+  .card .pd{font-weight:700; font-size:18px; letter-spacing:-.04em; line-height:1.35}
+  .card .r{font-weight:700; font-size:30px; letter-spacing:-.05em; line-height:1.1; text-align:right; white-space:nowrap; font-feature-settings:"tnum"}
+  .card .i{font-size:13px; color:var(--sub); text-align:right; white-space:nowrap}
+  .card .cd{grid-column:1 / -1; font-size:15px; margin-top:6px}
+  .card .cd b{display:inline-block; font-size:13px; border-radius:6px; padding:2px 7px 0; margin-right:6px; background:var(--soft); border:1.5px solid var(--hair)}
+  .card .cd b.free{background:var(--green); border-color:transparent}
+  .card .tr{grid-column:1 / -1; font-size:13.5px; color:var(--sub); line-height:1.5}
+  .card .tg{grid-column:1 / -1; display:flex; flex-wrap:wrap; gap:6px; margin-top:4px}
+  .card .tg span{font-size:12.5px; border-radius:6px; padding:2px 7px 0; background:var(--blue-soft); color:var(--blue)}
+  .card .tg span.yr{background:var(--ink); color:#fff}
+  .more-line{font-size:14px; color:var(--sub); margin-top:10px}
+
+  .box{border:2px solid var(--line); border-radius:22px; padding:16px 18px 14px; margin-top:16px}
+  .box.yel{background:var(--yel)}
+  .box.soft{background:var(--soft); border-color:var(--hair)}
+  .box h3{font-size:17px; font-weight:700; margin-bottom:4px; letter-spacing:-.03em}
+  .box p{font-size:15px; color:var(--sub); margin-top:4px}
+  .box p b{color:var(--ink)}
+
+  section.more{margin-top:38px}
+  .pill{display:inline-block; border:2.5px solid var(--line); border-radius:999px; padding:9px 18px 6px; font-size:20px; font-weight:700; letter-spacing:-.04em; background:#fff}
+  ul.dots{list-style:none; margin-top:12px; display:grid; gap:10px}
+  ul.dots li{font-size:15.5px; padding-left:16px; position:relative}
+  ul.dots li::before{content:""; position:absolute; left:0; top:.6em; width:7px; height:7px; border-radius:50%; background:var(--blue)}
+
+  footer{margin-top:44px; border-top:2px solid var(--line); padding-top:18px; font-size:14px; color:var(--sub)}
+  footer p{margin:8px 0}
+  [hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="date">2026년 11월 18일 공시 기준 · 삐요의 통장 정리표</div>
+  <h1>넣을 돈에 맞는<span class="blue">파킹통장 · 예금</span></h1>
+  <p class="lead">언제 쓸 돈인지 고르고 금액만 넣으면 <b>맞는 통장만</b> 금리 높은 순으로 보여줘. 조건 보고 나한테 안 되는 건 넘기면 끝.</p>
+</header>
+
+<p class="ask"><span class="n">1</span>이 돈, 언제 쓸 거야?</p>
+<div class="kinds" role="group" aria-label="돈의 목적">
+  <button class="kind" type="button" data-k="park"><b>언제든 쓸 돈</b><span>비상금 · 생활비 → 파킹통장</span></button>
+  <button class="kind" type="button" data-k="d6"><b>6개월 안 쓸 돈</b><span>짧게 묶기 → 6개월 예금</span></button>
+  <button class="kind" type="button" data-k="d12"><b>1년 안 쓸 돈</b><span>길게 묶기 → 1년 예금</span></button>
+</div>
+
+<p class="ask"><span class="n">2</span>얼마 넣을 거야?</p>
+<label class="custom" for="myamt"><input id="myamt" type="number" inputmode="numeric" min="1" step="1" value="1000" placeholder="예: 300"> 만원</label>
+<p class="hint" id="hint">만원 단위로 넣어 줘. 300만원이면 300.</p>
+
+<div class="head"><h2 id="title"></h2><span>금리 · 이자는 세전</span></div>
+<p class="note" id="note"></p>
+<div id="out"></div>
+
+<section class="more">
+  <span class="pill">만들기 전에 알아 둘 것</span>
+  <ul class="dots">
+    <li><b>파킹통장 「20영업일」 조건</b>은 최근 한 달쯤 안에 다른 입출금통장을 만들었으면 못 만든다는 뜻이야. 여러 개 만들 거면 이 조건 있는 곳부터.</li>
+    <li><b>「1년만」</b> 표시가 있는 파킹 금리는 가입하고 1년이 지나면 내려가. 끝나는 날을 달력에 적어 둬.</li>
+    <li>새로 연 통장은 처음엔 한도제한계좌라 <b>하루 이체가 100만원 안팎</b>으로 묶여. 급하게 꺼내 쓸 돈이면 미리 열어서 한도를 풀어 둬.</li>
+    <li>예금은 <b>만기 전에 깨면</b> 약속한 금리보다 훨씬 적게 받아. 정말 안 쓸 돈만 넣어.</li>
+    <li>예금자보호는 은행이든 저축은행이든 <b>한 곳당 원금과 이자를 합쳐 1억원</b>까지야.</li>
+  </ul>
+</section>
+
+<footer>
+  <p>파킹통장은 저축은행중앙회 입출금자유예금 비교공시와 각 은행 상품 페이지, Npay 머니 우리 통장은 네이버 발표(2026년 10월 22일), 모니모 우리 매일이자 통장은 우리은행 상품 페이지 기준이야. 정기예금은 저축은행중앙회 · 은행연합회 정기예금 비교공시(2026년 11월 18일 조회) 기준이야.</p>
+  <p>금리는 모두 세전 연이율이고, 이자에서 15.4% 세금을 떼고 받아. 금리는 자주 바뀌니 가입 전에 앱에서 꼭 다시 확인해 줘. 특정 상품을 권하는 게 아니라 금리와 조건을 모은 표야.</p>
+  <p>만든 사람 · 삐요 (@piyo_toon) · © 2026</p>
+</footer>
+</div>
+
+<script>
+var INF = Infinity;
+// 파킹통장 — tiers: [구간 상한(만원), 금리%], free: 조건 없음, only: 이 금액까지만 보여줌
+var P = [
+ {bank:'HB저축은행', name:'HB하루플러스통장', tiers:[[100,5.0],[1000,4.0],[5000,3.0],[INF,2.5]], tr:'100만원까지 5% · 1,000만원까지 4% · 5,000만원까지 3% · 넘는 부분 2.5% (HB 첫 거래면 0.2%p 더)', cond:'최근 20영업일 안에 다른 입출금통장 만든 적 없어야', tags:['SB톡톡+ 앱','1인 1계좌']},
+ {bank:'다올저축은행', name:'Fi 쌈짓돈Ⅲ 통장', tiers:[[100,5.0],[5000,3.5],[INF,2.5]], tr:'100만원까지 5% · 5,000만원까지 3.5% · 넘는 부분 2.5%', free:1, cond:'', tags:[]},
+ {bank:'모아저축은행', name:'e-모아파킹통장', tiers:[[100,4.0],[1000,3.5],[INF,1.0]], tr:'100만원까지 4% · 1,000만원까지 3.5% · 넘는 부분 1%', cond:'최근 20영업일 안에 다른 입출금통장 만든 적 없어야', tags:['SB톡톡+ 앱','1인 1계좌']},
+ {bank:'우리금융저축은행', name:'첫번째 저축예금', tiers:[[20000,3.5],[INF,1.1]], tr:'2억원까지 3.5%', free:1, cond:'', tags:['1인 1계좌']},
+ {bank:'JT저축은행', name:'JT점프업Ⅱ저축예금', tiers:[[5000,3.5]], only:5000, tr:'5,000만원까지 3.5% (넘으면 금리가 내려가)', free:1, cond:'', tags:['1인 1계좌']},
+ {bank:'대신저축은행', name:'더드리고입출금통장', tiers:[[20000,3.4],[INF,0.1]], tr:'2억원까지 3.4%', free:1, cond:'', tags:['앱 전용','1인 1계좌']},
+ {bank:'예가람저축은행', name:'The프리미엄 멤버십 파킹통장', tiers:[[20000,3.31]], tr:'2억원 미만, 넣은 돈 전체에 3.31%', free:1, cond:'', tags:[]},
+ {bank:'키움저축은행', name:'더 키움 플러스 파킹통장', tiers:[[20000,3.3],[INF,2.0]], tr:'2억원까지 3.3% (첫 거래면 3.4%)', cond:'최근 20영업일 안에 다른 입출금통장 만든 적 없어야', tags:['앱 전용','1인 1계좌']},
+ {bank:'신한저축은행', name:'참신한파킹통장', tiers:[[10000,3.2],[100000,2.7]], tr:'1억원까지 3.2% · 넘는 부분 2.7%', cond:'최근 20영업일 안에 입출금통장 만든 적 없어야', tags:['앱 전용']},
+ {bank:'교보SBI저축은행 (옛 SBI저축은행)', name:'생활파킹통장', tiers:[[200,7.7],[10000,1.7],[INF,0.2]], tr:'200만원까지 최고 7.7% · 1억원까지 1.7%', cond:'신규 고객 + 만 39세 이하 + 간편결제 계좌 등록 (신규 고객 아니면 200만원까지 최고 3.7%)', yr:'7.7%는 1년만', tags:['앱 전용','1인 1계좌']},
+ {bank:'OK저축은행', name:'OK짠테크통장Ⅱ', tiers:[[50,7.0],[500,2.8],[5000,2.1],[INF,1.0]], tr:'50만원까지 최고 7% · 500만원까지 2.8% · 5,000만원까지 2.1%', cond:'네이버·카카오·페이코·토스 페이나 카드 결제계좌로 등록 + 마케팅 동의 (못 채우면 50만원까지 5%) · OK 보통예금 없는 사람만', tags:['OK저축은행 앱','1인 1계좌']},
+ {bank:'대신저축은행', name:'대신 더더더파킹', tiers:[[200,6.0],[INF,2.0]], tr:'200만원까지 최고 6% · 넘는 부분 2% (최근 90일 대신 예적금이 없어도 첫 거래로 봐)', cond:'대신 첫 거래 + 문자 마케팅 동의 (첫 거래가 아니어도 마케팅 동의하면 200만원까지 4%)', yr:'6%는 1년만', tags:['앱 전용','1인 1계좌']},
+ {bank:'우리은행', name:'Npay 머니 우리 통장', tiers:[[200,4.0],[INF,0.1]], tr:'200만원까지 4% · 넘는 부분 0.1%', cond:'Npay 앱에서 머니 통장으로 연결 · 2027년 4월 21일까지 가입, 75만 계좌 한정', yr:'4%는 1년만', tags:['1금융','Npay 결제 최대 3% 적립']},
+ {bank:'우리은행', name:'모니모 우리 매일이자 통장', tiers:[[300,4.0],[INF,0.1]], tr:'300만원까지 4% · 넘는 부분 0.1%', cond:'모니모 앱에서 처음 가입 + 마케팅 동의 2개 · 20만 계좌 한정', yr:'4%는 1년만', tags:['1금융','1인 1계좌']}
+];
+// 정기예금 — k: s 저축은행 / b 은행(1금융), r: 금리%, min·max: 가입 금액(만원)
+var D = {
+ d12: [
+  {k:'s', bank:'유니온저축은행', name:'e-정기예금', r:4.21, free:1, tags:['비대면']},
+  {k:'s', bank:'우리금융저축은행', name:'e-회전정기예금', r:4.20, free:1, tags:['비대면'], tr:'1년마다 금리를 다시 정하는 상품'},
+  {k:'s', bank:'OK저축은행', name:'OK e-정기예금', r:4.15, free:1, tags:['비대면']},
+  {k:'s', bank:'드림저축은행', name:'톡톡정기예금', r:4.15, free:1, tags:['비대면']},
+  {k:'s', bank:'NH저축은행', name:'NH특판정기예금', r:4.15, free:1, tags:['모바일','특판']},
+  {k:'s', bank:'바로저축은행', name:'SB톡톡 정기예금', r:4.13, free:1, tags:['비대면']},
+  {k:'s', bank:'상상인플러스저축은행', name:'e-정기예금', r:4.13, free:1, tags:['비대면']},
+  {k:'b', bank:'BNK경남은행', name:'The든든예금(시즌2)', r:4.10, cond:'최근 12개월 경남은행 예금 신규 · 해지 없음 + 마케팅 동의 (못 채우면 3.65%)', min:100, tags:['앱 전용','이벤트 금리 포함']},
+  {k:'b', bank:'BNK부산은행', name:'더(The) 특판 정기예금', r:4.10, cond:'부산은행 신규 고객이거나 정기예금 중도해지 고객 + 알림 동의 (못 채우면 2.70%)', min:100, tags:['비대면']},
+  {k:'b', bank:'전북은행', name:'JB 123 정기예금', r:4.10, cond:'가입 전 6개월간 전북은행 정기예금 없음 + 정보 동의 (12/31까지, 못 채우면 3.50%)', min:100, tags:['비대면']},
+  {k:'b', bank:'SC제일은행', name:'e-그린세이브예금', r:4.05, cond:'SC제일은행 첫 거래 (아니면 3.85%)', tags:['비대면']},
+  {k:'b', bank:'Sh수협은행', name:'Sh첫만남우대예금', r:4.01, cond:'최근 1년 수협 예적금 없음 + 마케팅 동의 (못 채우면 2.96%)', min:100, max:3000, tags:['비대면','3,000만원까지']},
+  {k:'b', bank:'전북은행', name:'JB 다이렉트예금통장', r:3.98, free:1, min:100, tags:['비대면']},
+  {k:'b', bank:'Sh수협은행', name:'헤이(Hey)정기예금', r:3.91, free:1, min:10, tags:['비대면']},
+  {k:'b', bank:'케이뱅크', name:'내맘대로 이자받는 정기예금', r:3.91, free:1, min:100, tags:[]},
+  {k:'b', bank:'카카오뱅크', name:'정기예금', r:3.80, free:1, min:100, tags:[]},
+  {k:'b', bank:'토스뱅크', name:'원하는 날 만기되는 정기예금', r:3.80, free:1, min:100, tags:[]}
+ ],
+ d6: [
+  {k:'s', bank:'스마트저축은행', name:'e-정기예금', r:4.10, free:1, tags:['비대면']},
+  {k:'s', bank:'스타저축은행', name:'스타e_정기예금', r:4.10, free:1, tags:['비대면']},
+  {k:'s', bank:'OK저축은행', name:'OK e-정기예금', r:4.05, free:1, tags:['비대면']},
+  {k:'s', bank:'대신저축은행', name:'스마트정기예금', r:4.05, free:1, tags:['비대면']},
+  {k:'s', bank:'JT친애저축은행', name:'비대면 정기예금', r:4.00, free:1, tags:['비대면']},
+  {k:'s', bank:'부림저축은행', name:'톡톡정기예금', r:4.00, free:1, tags:['비대면']},
+  {k:'s', bank:'머스트삼일저축은행', name:'e-정기예금', r:4.00, free:1, tags:['비대면']},
+  {k:'b', bank:'Sh수협은행', name:'헤이(Hey)정기예금', r:3.75, free:1, min:10, tags:['비대면']},
+  {k:'b', bank:'BNK경남은행', name:'The든든예금(시즌2)', r:3.75, cond:'최근 12개월 경남은행 예금 신규 · 해지 없음 + 마케팅 동의 (못 채우면 3.30%)', min:100, tags:['앱 전용','이벤트 금리 포함']},
+  {k:'b', bank:'BNK부산은행', name:'더(The) 특판 정기예금', r:3.70, cond:'부산은행 신규 고객이거나 정기예금 중도해지 고객 + 알림 동의 (못 채우면 2.30%)', min:100, tags:['비대면']},
+  {k:'b', bank:'케이뱅크', name:'내맘대로 이자받는 정기예금', r:3.65, free:1, min:100, tags:[]},
+  {k:'b', bank:'카카오뱅크', name:'정기예금', r:3.60, free:1, min:100, tags:[]},
+  {k:'b', bank:'SC제일은행', name:'e-그린세이브예금', r:3.60, cond:'SC제일은행 첫 거래 (아니면 3.40%)', tags:['비대면']},
+  {k:'b', bank:'IBK기업은행', name:'IBK굴리기통장', r:3.56, free:1, min:100, tags:[]},
+  {k:'b', bank:'한국산업은행', name:'KDB 정기예금', r:3.55, free:1, tags:[]}
+ ]
+};
+var MORE12 = 'HB · OSB · 고려(GPS) · JT · 흥국 · 한성 · 안양 · 대한 · 조흥 · CK저축은행도 조건 없이 4.10%야.';
+var state = {k:'park', a:1000};
+
+function interest(p, a){
+  var prev = 0, sum = 0;
+  for (var k = 0; k < p.tiers.length; k++){
+    var cap = p.tiers[k][0], r = p.tiers[k][1];
+    if (a <= prev) break;
+    sum += (Math.min(a, cap) - prev) * r / 100; prev = cap;
+  }
+  return a > prev ? null : sum;
+}
+function man(v){
+  if (v >= 10000){ var e = Math.floor(v/10000), r = Math.round(v%10000); return e + '억' + (r ? ' ' + r.toLocaleString() + '만' : '') + '원'; }
+  if (v >= 1) return (Math.round(v*10)/10).toLocaleString() + '만원';
+  return Math.round(v*10000).toLocaleString() + '원';
+}
+function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+function pct(r){ return (Math.round(r*100 - 1e-7)/100).toFixed(2).replace(/0$/,'') + '%'; }  // 딱 반(3.015)은 내림, 은행 예시와 같게
+function card(p, r, iText, top){
+  var tags = '';
+  if (p.yr) tags += '<span class="yr">' + esc(p.yr) + '</span>';
+  (p.tags||[]).forEach(function(t){ tags += '<span>' + esc(t) + '</span>'; });
+  var cd = p.free ? '<b class="free">조건 없음</b>' + esc(p.cond||'') : '<b>조건</b>' + esc(p.cond);
+  return '<div class="card' + (top ? ' top' : '') + '">'
+    + '<div class="nm"><div class="bk">' + esc(p.bank) + '</div><div class="pd">' + esc(p.name) + '</div></div>'
+    + '<div><div class="r">' + pct(r) + '</div><div class="i">' + iText + '</div></div>'
+    + '<div class="cd">' + cd + '</div>'
+    + (p.tr ? '<div class="tr">' + esc(p.tr) + '</div>' : '')
+    + (tags ? '<div class="tg">' + tags + '</div>' : '')
+    + '</div>';
+}
+function byRate(x, y){ return (y.r - x.r) || ((y.p.free?1:0) - (x.p.free?1:0)); }
+
+function renderPark(a){
+  var rows = [];
+  P.forEach(function(p){
+    if (p.only && a > p.only) return;
+    var i = interest(p, a); if (i === null) return;
+    var r = i/a*100;
+    if (r < 3) return;   // 이 금액엔 금리가 크게 떨어지는 통장은 빼기
+    rows.push({p:p, i:i, r:r});
+  });
+  rows.sort(byRate);
+  if (rows.length > 8){ var cut = rows[7].r; rows = rows.filter(function(x){ return x.r >= cut - 1e-9; }); }
+  var best = rows.length ? rows[0].r : 0;
+  var h = '<div class="list">' + rows.map(function(x){ return card(x.p, x.r, '1년 약 ' + man(x.i), Math.abs(x.r-best) < 1e-9); }).join('') + '</div>';
+  h += '<div class="box soft"><h3>쓰던 은행 앱에 둬도 괜찮아</h3><p>옮기기 귀찮으면 쓰던 앱의 파킹통장도 월급통장보다는 나아. 카카오뱅크 세이프박스 <b>1.8%</b> · 케이뱅크 플러스박스 <b>1.81%</b>(5,000만원 넘는 부분 2.2%) · 토스뱅크 나눠모으기 <b>1.4%</b>, 셋 다 조건 없음.</p></div>';
+  if (a >= 5000) h += '<div class="box yel"><h3>이만큼 큰돈이면</h3><p>파킹통장엔 <b>곧 나갈 전세 보증금</b>처럼 잠깐 둘 돈만 둬. 계약일 전에 미리 열어서 이체 한도를 풀어 두고, 1억원이 넘으면 두 곳에 나눠 넣어.</p></div>';
+  return h;
+}
+function renderDep(key, a){
+  var months = key === 'd6' ? 6 : 12;
+  var list = D[key].filter(function(p){ return !(p.min && a < p.min) && !(p.max && a > p.max); })
+    .map(function(p){ return {p:p, r:p.r, i:a*p.r/100*months/12}; });
+  function block(kind, title, sub){
+    var g = list.filter(function(x){ return x.p.k === kind; }).sort(byRate).slice(0, 6);
+    if (!g.length) return '';
+    var best = g[0].r;
+    return '<p class="grp">' + title + '<span>' + sub + '</span></p><div class="list">'
+      + g.map(function(x){ return card(x.p, x.r, '만기 때 약 ' + man(x.i), Math.abs(x.r-best) < 1e-9); }).join('') + '</div>';
+  }
+  var h = block('s', '저축은행', '대부분 조건 없이 이 금리 그대로');
+  if (key === 'd12') h += '<p class="more-line">' + MORE12 + '</p>';
+  h += block('b', '은행 (1금융)', '조건을 채워야 최고 금리인 곳이 많아');
+  if (a < 100) h += '<p class="more-line">100만원보다 적으면 가입할 수 있는 예금이 줄어. 은행 예금은 대부분 100만원부터야.</p>';
+  h += '<div class="box soft"><h3>저축은행 예금도 괜찮아?</h3><p>예금자보호는 저축은행도 은행과 똑같이 <b>한 곳당 원금과 이자를 합쳐 1억원</b>까지야. 1억원이 넘으면 여러 곳에 나눠 넣어.</p></div>';
+  return h;
+}
+function render(){
+  var k = state.k, a = state.a;
+  var label = k === 'park' ? '파킹통장' : (k === 'd6' ? '6개월 예금' : '1년 예금');
+  document.getElementById('title').textContent = man(a) + ' · ' + label;
+  document.getElementById('note').textContent = k === 'park'
+    ? '금리는 구간마다 다르게 붙는 걸 합쳐서 계산한 거야. 이자는 1년 그대로 뒀을 때.'
+    : '저축은행 · 은행에서 각각 금리 높은 순. 이자는 만기까지 뒀을 때. 저축은행 최소 가입금액은 앱에서 확인해.';
+  document.getElementById('out').innerHTML = k === 'park' ? renderPark(a) : renderDep(k, a);
+  document.querySelectorAll('.kind').forEach(function(b){ b.setAttribute('aria-pressed', String(b.dataset.k === k)); });
+  document.querySelectorAll('.amt').forEach(function(b){ b.setAttribute('aria-pressed', String(+b.dataset.a === a)); });
+}
+document.querySelectorAll('.kind').forEach(function(b){ b.addEventListener('click', function(){ state.k = b.dataset.k; render(); }); });
+var myamt = document.getElementById('myamt'), hint = document.getElementById('hint');
+var HINT = '만원 단위로 넣어 줘. 300만원이면 300.';
+myamt.addEventListener('input', function(){
+  var v = Math.round(+myamt.value);
+  if (!(v >= 1)) return;   // 비우거나 0이면 그대로 두기
+  if (v >= 100000){        // 10억 이상이면 원 단위로 넣은 것으로 보고 만원으로 바꿈
+    v = Math.round(v / 10000);
+    if (!(v >= 1)) return;
+    hint.textContent = '원으로 넣은 것 같아서 ' + man(v) + '으로 계산했어.';
+  } else hint.textContent = HINT;
+  state.a = v; render();
+});
+render();
+</script>
+</body>
+</html>
